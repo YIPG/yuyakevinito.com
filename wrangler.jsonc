@@ -1,7 +1,13 @@
 {
-  "name": "yuyakevinito",
+  "name": "yuyakevinito-com",
   "compatibility_date": "2026-09-28",
   "assets": {
     "directory": "./public"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "yuyakevinito.com",
+      "custom_domain": true
+    }
+  ]
 }

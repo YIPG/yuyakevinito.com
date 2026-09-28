@@ -22,7 +22,8 @@ automatic deployments and pull request previews. No GitHub Actions deployment
 workflow or repository secrets are needed.
 
 `wrangler.jsonc` configures the Worker to serve `public/` directly. There is no
-Worker script or application build step.
+Worker script or application build step. It also declares `yuyakevinito.com` as
+the Worker's custom domain, so the domain configuration stays in Git.
 
 ### One-time Cloudflare setup
 
@@ -35,7 +36,7 @@ Worker script or application build step.
 
    | Setting | Value |
    | --- | --- |
-   | Project name | `yuyakevinito` |
+   | Project name | `yuyakevinito-com` |
    | Production branch | `main` |
    | Build command | Leave empty |
    | Deploy command | `npx wrangler deploy` |
@@ -49,11 +50,28 @@ Worker script or application build step.
    directory field: `assets.directory` in that file already points to `public/`.
 
 4. Select **Save and Deploy**.
-5. In the Worker's **Settings > Domains & Routes > Add > Custom Domain** flow,
-   add `yuyakevinito.com`. Cloudflare manages the DNS record and TLS certificate.
+5. The deploy command attaches `yuyakevinito.com` from `wrangler.jsonc`. Check it
+   under **Settings > Domains & Routes**. Cloudflare manages the DNS record and
+   TLS certificate.
 
 Only `public/` is published. Do not manually point a CNAME at the `workers.dev`
-address; use the Custom Domain flow.
+address.
+
+### CLI management
+
+Wrangler can deploy the site and manage its declared custom domain:
+
+```sh
+npx wrangler login --use-keyring
+npx wrangler deploy
+```
+
+Keep credentials out of the repository. Wrangler can store login credentials
+securely in the operating system's keychain.
+
+Managing Git build triggers through the Workers Builds API requires a separate
+user-scoped API token with **Workers Builds Configuration: Edit** permission.
+That is distinct from the deployment token used by the builds themselves.
 
 ### Updating the site
 
