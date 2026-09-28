@@ -71,7 +71,7 @@ test("homepage links to each service with an English name and description", () =
     assert.match(content, /aria-hidden="true" focusable="false"/);
   }
   assert.match(html, /<section class="projects" aria-labelledby="projects-heading">/);
-  assert.match(html, /<h2 id="projects-heading">A few things I've made<\/h2>/);
+  assert.match(html, /<h2 id="projects-heading">A few things <s aria-hidden="true">I<\/s> an AI Agent made<\/h2>/);
   assert.doesNotMatch(html, /A few things are in the works/);
 });
 
