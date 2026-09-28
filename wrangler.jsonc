@@ -1,6 +1,8 @@
 {
   "name": "yuyakevinito-com",
   "compatibility_date": "2026-09-28",
+  "workers_dev": true,
+  "preview_urls": true,
   "assets": {
     "directory": "./public"
   },

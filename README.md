@@ -23,7 +23,9 @@ workflow or repository secrets are needed.
 
 `wrangler.jsonc` configures the Worker to serve `public/` directly. There is no
 Worker script or application build step. It also declares `yuyakevinito.com` as
-the Worker's custom domain, so the domain configuration stays in Git.
+the Worker's custom domain, so the domain configuration stays in Git. The
+standard `workers.dev` URL and version preview URLs remain enabled alongside
+the custom domain.
 
 ### One-time Cloudflare setup
 
