@@ -87,7 +87,7 @@ That is distinct from the deployment token used by the builds themselves.
 
 ### Updating the site
 
-- The homepage lists kakusu, Karuku, and koe below the introduction. Update their
+- The homepage lists kakusu, Karuku, koe, and X Card Tools below the introduction. Update their
   names, short English descriptions, and direct HTTPS links in `public/index.html`.
   Service links use their stable subdomains, not their GitHub repository URLs,
   and open in the same tab.

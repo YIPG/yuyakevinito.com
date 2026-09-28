@@ -58,6 +58,7 @@ test("homepage links to each service with an English name and description", () =
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
     ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
     ["koe", "https://koe.yuyakevinito.com/", "Dictation for your Mac, wherever you type."],
+    ["X Card Tools", "https://xcard.yuyakevinito.com/", "A guide and shortcut to X's Card Validator."],
   ];
   const links = [...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
   assert.equal(links.length, projects.length);
