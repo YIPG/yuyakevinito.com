@@ -100,6 +100,19 @@
         text-wrap: pretty;
       }
 
+      .profile-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        margin-top: 0.75rem;
+        color: #54594f;
+        font-size: 1rem;
+        line-height: 1.5;
+        text-decoration-color: #adb5a2;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.22em;
+      }
+
       .projects {
         margin-top: 3rem;
       }
@@ -153,12 +166,15 @@
         color: #676c61;
       }
 
+      .profile-link:hover,
+      .profile-link:focus-visible,
       .project-link:hover .project-name,
       .project-link:focus-visible .project-name {
         color: #3d5232;
         text-decoration-color: currentColor;
       }
 
+      .profile-link:focus-visible,
       .project-link:focus-visible {
         outline: 2px solid #3d5232;
         outline-offset: 5px;
@@ -178,6 +194,7 @@
         I'm a software engineer who enjoys building useful things and exploring
         new ideas.
       </p>
+      <a class="profile-link" href="https://www.linkedin.com/in/yuyaito/" rel="me">LinkedIn</a>
       <section class="projects" aria-labelledby="projects-heading">
         <h2 id="projects-heading">A few things <s aria-hidden="true">I</s> an AI Agent made</h2>
         <ul class="project-list" role="list">

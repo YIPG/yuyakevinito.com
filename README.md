@@ -87,6 +87,10 @@ That is distinct from the deployment token used by the builds themselves.
 
 ### Updating the site
 
+- The LinkedIn link beside the introduction uses the profile published in the
+  `YIPG` GitHub account's social links: <https://www.linkedin.com/in/yuyaito/>.
+  Confirm career dates, roles, and public descriptions with the owner before
+  adding a career timeline; do not infer them from profile metadata.
 - The homepage lists kakusu, Karuku, koe, and X Card Tools below the introduction. Update their
   names, short English descriptions, and direct HTTPS links in `public/index.html`.
   Service links use their stable subdomains, not their GitHub repository URLs,

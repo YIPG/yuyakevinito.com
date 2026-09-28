@@ -53,6 +53,17 @@ test("Open Graph and X cards share a real, correctly sized PNG", () => {
   assert.ok(image.bytes < 1_000_000, "Keep the social image under 1 MB");
 });
 
+test("homepage links to the verified LinkedIn profile separately from projects", () => {
+  const profiles = [...html.matchAll(/<a\b([^>]*class="profile-link"[^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.equal(profiles.length, 1);
+  const [, attributes, content] = profiles[0];
+  assert.ok(attributes.includes('href="https://www.linkedin.com/in/yuyaito/"'));
+  assert.ok(attributes.includes('rel="me"'));
+  assert.equal(content, "LinkedIn");
+  assert.doesNotMatch(attributes, /target=|tabindex=|onclick=/);
+  assert.ok(html.indexOf('class="profile-link"') < html.indexOf('<section class="projects"'));
+});
+
 test("homepage links to each service with an English name and description", () => {
   const projects = [
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
@@ -60,7 +71,7 @@ test("homepage links to each service with an English name and description", () =
     ["koe", "https://koe.yuyakevinito.com/", "Dictation for your Mac, wherever you type."],
     ["X Card Tools", "https://xcard.yuyakevinito.com/", "A guide and shortcut to X's Card Validator."],
   ];
-  const links = [...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
+  const links = [...html.matchAll(/<a\b([^>]*class="project-link"[^>]*)>([\s\S]*?)<\/a>/g)];
   assert.equal(links.length, projects.length);
   for (const [index, [name, url, description]] of projects.entries()) {
     const [, attributes, content] = links[index];
