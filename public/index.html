@@ -100,23 +100,68 @@
         text-wrap: pretty;
       }
 
-      .note {
-        display: flex;
-        align-items: baseline;
-        gap: 0.65rem;
-        margin: 2.5rem 0 0;
-        color: #676c61;
-        font-size: 0.875rem;
+      .projects {
+        margin-top: 3rem;
+      }
+
+      h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+
+      .project-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .project-list li + li {
+        border-top: 1px solid #dfe1d9;
+      }
+
+      .project-link {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.125rem 0;
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .project-name {
+        font-size: 1.0625rem;
+        font-weight: 600;
+        line-height: 1.5;
+        text-decoration: underline;
+        text-decoration-color: #adb5a2;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.22em;
+      }
+
+      .project-description {
+        display: block;
+        margin-top: 0.25rem;
+        color: #54594f;
+        font-size: 0.9375rem;
         line-height: 1.6;
       }
 
-      .note::before {
-        width: 0.4rem;
-        height: 0.4rem;
-        flex: 0 0 auto;
-        border-radius: 50%;
-        background: #7c8867;
-        content: "";
+      .project-link svg {
+        color: #676c61;
+      }
+
+      .project-link:hover .project-name,
+      .project-link:focus-visible .project-name {
+        color: #3d5232;
+        text-decoration-color: currentColor;
+      }
+
+      .project-link:focus-visible {
+        outline: 2px solid #3d5232;
+        outline-offset: 5px;
       }
 
       ::selection {
@@ -133,7 +178,53 @@
         I'm a software engineer who enjoys building useful things and exploring
         new ideas.
       </p>
-      <p class="note">A few things are in the works. More soon.</p>
+      <section class="projects" aria-labelledby="projects-heading">
+        <h2 id="projects-heading">A few things I've made</h2>
+        <ul class="project-list" role="list">
+          <li>
+            <a class="project-link" href="https://kakusu.yuyakevinito.com/">
+              <span>
+                <span class="project-name">kakusu</span>
+                <span class="project-description">
+                  Hide faces in photos, right in your browser.
+                </span>
+              </span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+                <path d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a class="project-link" href="https://karuku.yuyakevinito.com/">
+              <span>
+                <span class="project-name">Karuku</span>
+                <span class="project-description">
+                  Compress JPEG photos while preserving HDR.
+                </span>
+              </span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+                <path d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a class="project-link" href="https://koe.yuyakevinito.com/">
+              <span>
+                <span class="project-name">koe</span>
+                <span class="project-description">
+                  Dictation for your Mac, wherever you type.
+                </span>
+              </span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+                <path d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </section>
     </main>
   </body>
 </html>

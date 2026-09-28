@@ -53,6 +53,27 @@ test("Open Graph and X cards share a real, correctly sized PNG", () => {
   assert.ok(image.bytes < 1_000_000, "Keep the social image under 1 MB");
 });
 
+test("homepage links to each service with an English name and description", () => {
+  const projects = [
+    ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
+    ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
+    ["koe", "https://koe.yuyakevinito.com/", "Dictation for your Mac, wherever you type."],
+  ];
+  const links = [...html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/g)];
+  assert.equal(links.length, projects.length);
+  for (const [index, [name, url, description]] of projects.entries()) {
+    const [, attributes, content] = links[index];
+    assert.ok(attributes.includes(`href="${url}"`));
+    assert.ok(content.includes(`<span class="project-name">${name}</span>`));
+    assert.ok(content.replace(/\s+/g, " ").includes(description));
+    assert.doesNotMatch(attributes, /target=|tabindex=|onclick=/);
+    assert.match(content, /aria-hidden="true" focusable="false"/);
+  }
+  assert.match(html, /<section class="projects" aria-labelledby="projects-heading">/);
+  assert.match(html, /<h2 id="projects-heading">A few things I've made<\/h2>/);
+  assert.doesNotMatch(html, /A few things are in the works/);
+});
+
 test("raster icons are available for search and home-screen bookmarks", () => {
   for (const [name, size] of [["favicon", 96], ["apple-touch-icon", 180]]) {
     const image = pngSize(`public/${name}.png`);

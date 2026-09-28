@@ -87,6 +87,10 @@ That is distinct from the deployment token used by the builds themselves.
 
 ### Updating the site
 
+- The homepage lists kakusu, Karuku, and koe below the introduction. Update their
+  names, short English descriptions, and direct HTTPS links in `public/index.html`.
+  Service links use their stable subdomains, not their GitHub repository URLs,
+  and open in the same tab.
 - Push a feature branch and open a pull request to get a preview deployment.
   Keep preview builds enabled for non-production branches.
 - Merge into `main` to automatically deploy the production site.
@@ -123,8 +127,8 @@ default macOS or Linux location. System fonts and emoji are rasterized on the
 rendering machine, so review the results when regenerating on another OS.
 The generated PNGs are committed; deployment does not need Chrome.
 
-To verify metadata, PNG dimensions, sitemap contents, and redirect/indexing
-behavior:
+To verify service links, metadata, PNG dimensions, sitemap contents, and
+redirect/indexing behavior:
 
 ```sh
 node --test tests/site.test.mjs
