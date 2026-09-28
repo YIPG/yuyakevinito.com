@@ -86,6 +86,24 @@ test("homepage links to each service with an English name and description", () =
   assert.doesNotMatch(html, /A few things are in the works/);
 });
 
+test("public health is discoverable above the site list", () => {
+  assert.match(html, /class="health-link" href="https:\/\/health\.yuyakevinito\.com\/"/);
+  assert.ok(html.indexOf('class="health-link"') < html.indexOf('<ul class="project-list"'));
+});
+
+test("homepage exposes only its opaque release identity for health checks", async () => {
+  const metadata = { id: "11111111-1111-4111-8111-111111111111", timestamp: "2026-09-28T00:00:00Z", tag: "private-build-tag" };
+  const response = await worker.fetch(new Request("https://yuyakevinito.com/"), {
+    ASSETS: { fetch: async () => new Response("home", { headers: { ETag: '"same"' } }) },
+    CF_VERSION_METADATA: metadata,
+  });
+  assert.equal(response.headers.get("X-Site-Version"), metadata.id);
+  assert.equal(response.headers.get("X-Site-Version-Created"), metadata.timestamp);
+  assert.equal(response.headers.get("ETag"), '"same"');
+  assert.ok(!JSON.stringify([...response.headers]).includes(metadata.tag));
+  assert.equal(await response.text(), "home");
+});
+
 test("raster icons are available for search and home-screen bookmarks", () => {
   for (const [name, size] of [["favicon", 96], ["apple-touch-icon", 180]]) {
     const image = pngSize(`public/${name}.png`);

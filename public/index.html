@@ -117,6 +117,17 @@
         margin-top: 3rem;
       }
 
+      .health-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 44px;
+        margin-bottom: 0.75rem;
+        color: #3d5232;
+        font-size: 0.9375rem;
+        text-underline-offset: 0.22em;
+      }
+
       h2 {
         margin: 0 0 0.5rem;
         font-size: 1rem;
@@ -175,6 +186,7 @@
       }
 
       .profile-link:focus-visible,
+      .health-link:focus-visible,
       .project-link:focus-visible {
         outline: 2px solid #3d5232;
         outline-offset: 5px;
@@ -196,6 +208,13 @@
       </p>
       <a class="profile-link" href="https://www.linkedin.com/in/yuyaito/" rel="me">LinkedIn</a>
       <section class="projects" aria-labelledby="projects-heading">
+        <a class="health-link" href="https://health.yuyakevinito.com/">
+          Site health
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+            <path d="M5 12h14m-6-6 6 6-6 6" />
+          </svg>
+        </a>
         <h2 id="projects-heading">A few things <s aria-hidden="true">I</s> an AI Agent made</h2>
         <ul class="project-list" role="list">
           <li>

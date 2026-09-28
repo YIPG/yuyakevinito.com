@@ -87,6 +87,11 @@ That is distinct from the deployment token used by the builds themselves.
 
 ### Updating the site
 
+- The **Site health** link above the project list opens
+  <https://health.yuyakevinito.com/>. Homepage responses expose only the opaque
+  Cloudflare version UUID and creation time in `X-Site-Version` and
+  `X-Site-Version-Created`, allowing the health service to verify deployments.
+
 - The LinkedIn link beside the introduction uses the profile published in the
   `YIPG` GitHub account's social links: <https://www.linkedin.com/in/yuyaito/>.
   Confirm career dates, roles, and public descriptions with the owner before
