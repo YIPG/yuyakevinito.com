@@ -87,7 +87,8 @@ That is distinct from the deployment token used by the builds themselves.
 
 ### Updating the site
 
-- The **Site health** link above the project list opens
+- A supporting sentence directly below the projects heading reads
+  "Worried about AI slop? Check the site health." Its final clause links to
   <https://health.yuyakevinito.com/>. Homepage responses expose only the opaque
   Cloudflare version UUID and creation time in `X-Site-Version` and
   `X-Site-Version-Created`, allowing the health service to verify deployments.

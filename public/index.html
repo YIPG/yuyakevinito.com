@@ -117,15 +117,20 @@
         margin-top: 3rem;
       }
 
+      .health-note {
+        margin: 0 0 0.5rem;
+        color: #54594f;
+        font-size: 0.875rem;
+        line-height: 1.6;
+      }
+
       .health-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        min-height: 44px;
-        margin-bottom: 0.75rem;
         color: #3d5232;
-        font-size: 0.9375rem;
         text-underline-offset: 0.22em;
+      }
+
+      .health-link:hover {
+        text-decoration-thickness: 2px;
       }
 
       h2 {
@@ -208,14 +213,11 @@
       </p>
       <a class="profile-link" href="https://www.linkedin.com/in/yuyaito/" rel="me">LinkedIn</a>
       <section class="projects" aria-labelledby="projects-heading">
-        <a class="health-link" href="https://health.yuyakevinito.com/">
-          Site health
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
-            <path d="M5 12h14m-6-6 6 6-6 6" />
-          </svg>
-        </a>
         <h2 id="projects-heading">A few things <s aria-hidden="true">I</s> an AI Agent made</h2>
+        <p class="health-note">
+          Worried about AI slop?
+          <a class="health-link" href="https://health.yuyakevinito.com/">Check the site health.</a>
+        </p>
         <ul class="project-list" role="list">
           <li>
             <a class="project-link" href="https://kakusu.yuyakevinito.com/">
