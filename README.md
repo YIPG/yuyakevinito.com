@@ -88,7 +88,7 @@ That is distinct from the deployment token used by the builds themselves.
 ### Updating the site
 
 - A supporting sentence directly below the projects heading reads
-  "Worried about AI slop? Check the site health." Its final clause links to
+  "Worried about AI slop? See the actual checks." Its final clause links to
   <https://health.yuyakevinito.com/>. Homepage responses expose only the opaque
   Cloudflare version UUID and creation time in `X-Site-Version` and
   `X-Site-Version-Created`, allowing the health service to verify deployments.
@@ -158,3 +158,41 @@ the exact card shown in a real X, LinkedIn, Facebook, or messaging-app post.
 See Cloudflare's [Workers Builds documentation](https://developers.cloudflare.com/workers/ci-cd/builds/),
 [Static Assets documentation](https://developers.cloudflare.com/workers/static-assets/),
 and [custom domain documentation](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
+
+## Production browser checks
+
+The homepage's actual-checks link opens the public report at
+<https://health.yuyakevinito.com/sites/home/> via its overview. The suite covers
+the published homepage, not the unpublished About page or the linked apps'
+internal features.
+
+```sh
+npm ci
+npx playwright install chromium webkit
+node scripts/report-checks.mjs prepare
+npm run test:browser
+```
+
+Four scenarios run at desktop and mobile viewport sizes in Playwright Chromium
+and WebKit: service links and Back, Tab/Enter navigation (Option+Tab for macOS
+WebKit) and overflow,
+JavaScript-disabled use, and sharing assets/404s. These are browser simulations,
+not physical phone or real Safari certification.
+
+`production-checks.yml` runs daily at 09:30 JST, via `workflow_dispatch`, and
+after successful Cloudflare production checks. It resolves the full GitHub
+check suite before accepting `main`; previews and other apps cannot trigger it.
+The workflow is separate from the static regression job and is not a deployment gate.
+
+The reporter sends only normalized results and opaque version UUIDs to
+`/api/checks/home`. Browser homepage versions must match the before/after probes
+and any expected deployment version. Missing results are incomplete, not passes.
+Set GitHub repository secret `SITE_CHECKS_SECRET` to the same dedicated value as
+the Health Worker's `HOME_CHECKS_SECRET`; never put the value in source or logs.
+Only the reporting step receives it, not browser tests.
+
+For an explicit local submission, supply that secret through the environment
+and run `node scripts/report-checks.mjs publish` after the checks. The prepared
+payload is saved under ignored `.site-checks/report.json`; repeating `publish`
+resends the identical report. `prepare` clears only the previous run's three
+named files. Raw Playwright reports stay local and are not uploaded as artifacts.

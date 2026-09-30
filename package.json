@@ -1,0 +1,13 @@
+{
+  "name": "yuyakevinito-site-checks",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test --config playwright.production.config.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

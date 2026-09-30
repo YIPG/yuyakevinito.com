@@ -1,0 +1,51 @@
+name: Production browser checks
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 0 * * *'
+  check_run:
+    types: [completed]
+permissions:
+  contents: read
+  checks: read
+concurrency:
+  group: production-browser-checks
+  cancel-in-progress: false
+jobs:
+  check:
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'check_run' ||
+       (github.event.check_run.app.id == 85455 &&
+        github.event.check_run.name == 'Workers Builds: yuyakevinito-com' &&
+        github.event.check_run.conclusion == 'success'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          cache: npm
+      - name: Verify production deployment
+        id: gate
+        run: node scripts/report-checks.mjs gate
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - run: npm ci
+        if: steps.gate.outputs.run == 'true'
+      - run: npx playwright install --with-deps chromium webkit
+        if: steps.gate.outputs.run == 'true'
+      - run: node scripts/report-checks.mjs prepare
+        if: steps.gate.outputs.run == 'true'
+        env:
+          EXPECTED_SITE_VERSION: ${{ steps.gate.outputs.expected-version }}
+      - run: npm run test:browser
+        if: steps.gate.outputs.run == 'true'
+      - name: Publish public result summary
+        if: always() && steps.gate.outputs.run == 'true'
+        run: node scripts/report-checks.mjs publish
+        env:
+          SITE_CHECKS_SECRET: ${{ secrets.SITE_CHECKS_SECRET }}

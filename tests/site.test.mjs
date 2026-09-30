@@ -88,7 +88,7 @@ test("homepage links to each service with an English name and description", () =
 
 test("public health is supporting copy directly below the projects heading", () => {
   assert.match(html, /<h2 id="projects-heading">[^]*?<\/h2>\s*<p class="health-note">/);
-  assert.match(html, /Worried about AI slop\?\s*<a class="health-link" href="https:\/\/health\.yuyakevinito\.com\/">Check the site health\.<\/a>/);
+  assert.match(html, /Worried about AI slop\?\s*<a class="health-link" href="https:\/\/health\.yuyakevinito\.com\/">See the actual checks\.<\/a>/);
   assert.equal((html.match(/class="health-link"/g) ?? []).length, 1);
   assert.match(html, /<p class="health-note">[^]*?<\/p>\s*<ul class="project-list"/);
   assert.ok(html.indexOf('id="projects-heading"') < html.indexOf('class="health-link"'));
