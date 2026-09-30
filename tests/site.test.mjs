@@ -6,9 +6,10 @@ import worker from "../worker.mjs";
 const root = new URL("../", import.meta.url);
 const read = (path) => readFileSync(new URL(path, root), "utf8");
 const html = read("public/index.html");
+const about = read("public/about/index.html");
 
-function meta(name) {
-  const tags = [...html.matchAll(/<meta\b[^>]*>/g)].map(([tag]) => tag);
+function meta(name, document = html) {
+  const tags = [...document.matchAll(/<meta\b[^>]*>/g)].map(([tag]) => tag);
   const matches = tags.filter((tag) =>
     tag.includes(`name="${name}"`) || tag.includes(`property="${name}"`)
   );
@@ -64,6 +65,107 @@ test("homepage links to the verified LinkedIn profile separately from projects",
   assert.ok(html.indexOf('class="profile-link"') < html.indexOf('<section class="projects"'));
 });
 
+test("the introduction links to About without replacing LinkedIn or the short bio", () => {
+  assert.match(html, /<p class="bio">\s*I'm a software engineer who enjoys building useful things and exploring\s*new ideas\.\s*<\/p>/);
+  const navigation = html.match(/<nav class="profile-links" aria-label="About Yuya">([\s\S]*?)<\/nav>/)?.[1];
+  assert.ok(navigation);
+  assert.match(navigation, /<a class="text-link about-link" href="\/about\/">\s*About me &amp; my work/);
+  assert.match(navigation, /href="https:\/\/www\.linkedin\.com\/in\/yuyaito\/"/);
+  assert.ok(html.indexOf('class="bio"') < html.indexOf('class="profile-links"'));
+  assert.ok(html.indexOf('class="profile-links"') < html.indexOf('<section class="projects"'));
+});
+
+test("About presents career history and education with semantic headings", () => {
+  assert.match(about, /<html lang="en">/);
+  assert.equal((about.match(/<h1\b/g) ?? []).length, 1);
+  assert.match(about, /<h1 class="about-heading">Yuya Ito<\/h1>/);
+  assert.match(about, /I'm a Senior Software Engineer at Microsoft/);
+  for (const heading of ["experience", "education"]) {
+    assert.match(about, new RegExp(`<section class="about-section" aria-labelledby="${heading}-heading">`));
+    assert.match(about, new RegExp(`<h2 id="${heading}-heading">`));
+  }
+  assert.doesNotMatch(about, /What I bring|capability-list|capabilities-heading|<dl\b/);
+  const experience = about.match(/<ol class="experience-list" role="list">([\s\S]*?)<\/ol>/)?.[1];
+  assert.ok(experience);
+  assert.deepEqual([...experience.matchAll(/<h3>([^<]+)<\/h3>/g)].map(([, company]) => company),
+    ["Microsoft", "Amazon", "Mercari", "Nikkei"]);
+  assert.equal((experience.match(/<li>/g) ?? []).length, 4);
+  assert.equal((experience.match(/class="period"/g) ?? []).length, 4);
+  assert.match(experience, /<h3>Amazon<\/h3>\s*<p class="period"><time datetime="2023">2023<\/time> &ndash; <time datetime="2025">2025<\/time><\/p>/);
+  assert.match(about, /Japan &amp; US/);
+  assert.match(about, /Tokyo Institute of Technology/);
+  assert.match(about, /Industrial Engineering &middot; Graduated <time datetime="2020">2020<\/time>/);
+});
+
+test("About moves directly from the current role to career history", () => {
+  const content = about.replace(/\s+/g, " ");
+  const introduction = content.match(/<header>(.*?)<\/header>/)?.[1];
+  assert.ok(introduction);
+  assert.equal((introduction.match(/<p\b/g) ?? []).length, 1);
+  assert.doesNotMatch(introduction, /Nikkei|Mercari|Amazon|about-summary|about-description/);
+  assert.match(content, /<\/header> <section class="about-section" aria-labelledby="experience-heading">/);
+  assert.doesNotMatch(content, /I make AI useful/);
+  assert.doesNotMatch(content, /\bReact\b|\bTypeScript\b|I started on the web/);
+  assert.match(content, /Copilot Studio, a platform for building and managing AI agents and workflows/);
+  assert.doesNotMatch(content, /\u2014|&mdash;|&#(?:0*8212|x0*2014);/i);
+  assert.match(content, /Software Development Engineer II &middot; Japan &amp; US/);
+  assert.match(meta("description", about), /building, shipping, and operating products across the stack/);
+});
+
+test("each company has one concise sentence describing its focus", () => {
+  const experience = about.match(/<ol class="experience-list" role="list">([\s\S]*?)<\/ol>/)?.[1];
+  assert.ok(experience);
+  const descriptions = [...experience.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(([, entry]) =>
+    [...entry.matchAll(/<p>([\s\S]*?)<\/p>/g)].map(([, text]) => text.replace(/\s+/g, " ").trim())
+  );
+  assert.deepEqual(descriptions, [
+    ["Developing knowledge integration and runtime capabilities for AI agents in Copilot Studio."],
+    ["Built Kindle promotion platforms in Japan and Customer Service systems in the US."],
+    ["Built purchase, payment, and authentication experiences for Mercari's web app."],
+    ["Developed and operated nikkei.com, the digital edition of The Nikkei."],
+  ]);
+});
+
+test("About has its own canonical metadata and reuses the existing social image", () => {
+  assert.match(about, /<title>About Yuya \| Software Engineer<\/title>/);
+  assert.match(about, /<link rel="canonical" href="https:\/\/yuyakevinito\.com\/about\/" \/>/);
+  assert.equal(meta("og:url", about), "https://yuyakevinito.com/about/");
+  assert.equal(meta("robots", about), "max-image-preview:large");
+  assert.equal(meta("og:type", about), "website");
+  assert.equal(meta("twitter:card", about), "summary_large_image");
+  assert.equal(meta("og:title", about), "About Yuya | Software Engineer");
+  assert.equal(meta("og:title", about), meta("twitter:title", about));
+  assert.match(meta("description", about), /Senior Software Engineer at Microsoft/);
+  assert.equal(meta("og:description", about), meta("description", about));
+  assert.equal(meta("og:description", about), meta("twitter:description", about));
+  for (const name of ["og:image", "og:image:type", "og:image:width", "og:image:height", "og:image:alt", "twitter:image", "twitter:image:alt"]) {
+    assert.equal(meta(name, about), meta(name));
+  }
+});
+
+test("both pages share local styles and work without client-side JavaScript", () => {
+  const css = read("public/styles.css");
+  assert.match(css, /:root\s*\{/);
+  assert.match(css, /a:focus-visible\s*\{/);
+  assert.match(css, /\.about-page\s*\{/);
+  for (const document of [html, about]) {
+    assert.match(document, /<link rel="stylesheet" href="\/styles\.css" \/>/);
+    assert.doesNotMatch(document, /<script\b|<style\b|onclick=/);
+    for (const name of ["favicon.png", "favicon.svg", "apple-touch-icon.png"]) {
+      assert.ok(document.includes(`href="/${name}"`));
+    }
+  }
+});
+
+test("About links back to home, projects, and the same LinkedIn profile", () => {
+  assert.match(about, /<nav class="about-nav" aria-label="Site navigation">/);
+  assert.match(about, /<a class="text-link" href="\/">/);
+  assert.match(about, /<a class="text-link" href="\/#projects-heading">/);
+  assert.match(html, /id="projects-heading"/);
+  assert.match(about, /<a class="profile-link" href="https:\/\/www\.linkedin\.com\/in\/yuyaito\/" rel="me">LinkedIn<\/a>/);
+  assert.doesNotMatch(about, /target=|tabindex=|onclick=/);
+});
+
 test("homepage links to each service with an English name and description", () => {
   const projects = [
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
@@ -116,7 +218,7 @@ test("raster icons are available for search and home-screen bookmarks", () => {
   }
 });
 
-test("robots and sitemap advertise only the canonical homepage", () => {
+test("robots and sitemap advertise both canonical pages", () => {
   const robots = read("public/robots.txt");
   assert.match(robots, /^User-agent: \*\nAllow: \//);
   assert.match(robots, /Sitemap: https:\/\/yuyakevinito\.com\/sitemap\.xml/);
@@ -124,7 +226,7 @@ test("robots and sitemap advertise only the canonical homepage", () => {
   const sitemap = read("public/sitemap.xml");
   assert.match(sitemap, /xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/);
   assert.deepEqual([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url),
-    ["https://yuyakevinito.com/"]);
+    ["https://yuyakevinito.com/", "https://yuyakevinito.com/about/"]);
 });
 
 test("Wrangler invokes the redirect before serving static assets", () => {
@@ -141,7 +243,7 @@ test("Wrangler invokes the redirect before serving static assets", () => {
 
 test("HTTP permanently redirects to HTTPS, preserving paths and queries", async () => {
   const env = { ASSETS: { fetch() { assert.fail("Redirect must not fetch assets"); } } };
-  for (const path of ["/", "/social-card.png", "/missing?from=a%26b"]) {
+  for (const path of ["/", "/about/", "/about?from=home", "/styles.css", "/social-card.png", "/missing?from=a%26b"]) {
     const response = await worker.fetch(new Request(`http://yuyakevinito.com${path}`), env);
     assert.equal(response.status, 301);
     assert.equal(response.headers.get("Location"), `https://yuyakevinito.com${path}`);

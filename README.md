@@ -1,6 +1,6 @@
 # yuyakevinito.com
 
-A small, English-language personal homepage. Plain HTML and CSS, with no
+A small, English-language personal site with a homepage and an About page. Plain HTML and CSS, with no
 client-side JavaScript, external fonts, or runtime package dependencies.
 
 ## Local preview
@@ -11,7 +11,8 @@ From this directory:
 python3 -m http.server 4173 --bind 127.0.0.1 --directory public
 ```
 
-Open <http://127.0.0.1:4173>.
+Open <http://127.0.0.1:4173> or the career page at
+<http://127.0.0.1:4173/about/>.
 
 To also exercise Worker routing locally, run `npx wrangler dev`. The configured
 development host is `localhost`, so Wrangler does not rewrite local requests
@@ -95,8 +96,19 @@ That is distinct from the deployment token used by the builds themselves.
 
 - The LinkedIn link beside the introduction uses the profile published in the
   `YIPG` GitHub account's social links: <https://www.linkedin.com/in/yuyaito/>.
-  Confirm career dates, roles, and public descriptions with the owner before
-  adding a career timeline; do not infer them from profile metadata.
+- The introduction also links to `/about/`, a concise professional profile in
+  `public/about/index.html`: a short introduction, reverse-chronological
+  experience, and education. Both pages share `public/styles.css`.
+  Move directly from the current role and product explanation to experience,
+  without a separate strengths section or self-assessment paragraph.
+  Keep past-career context in the experience section. Describe each
+  company's work in one sentence; leave detailed accomplishments to the resume.
+  The Copilot Studio
+  description follows the public [product overview](https://learn.microsoft.com/en-us/microsoft-copilot-studio/fundamentals-what-is-copilot-studio).
+  Career copy is based on the owner's supplied history, not inferred profile
+  metadata. Have the owner review dates, roles, and descriptions before
+  publishing changes. Keep the source document, compensation, internal
+  assessments, internal system names, and unverified metrics out of public assets.
 - The homepage lists kakusu, Karuku, koe, and X Card Tools below the introduction. Update their
   names, short English descriptions, and direct HTTPS links in `public/index.html`.
   Service links use their stable subdomains, not their GitHub repository URLs,
@@ -109,12 +121,14 @@ That is distinct from the deployment token used by the builds themselves.
 
 ### SEO and social previews
 
-- The visible introduction is unchanged. The document title identifies Yuya as
-  a software engineer, with a description and canonical HTTPS URL.
+- The homepage introduction is unchanged. Each page has its own title,
+  description, and canonical HTTPS URL; `/about/` uses a trailing slash to match
+  its directory index.
 - Open Graph and X/Twitter metadata use the same public 1200 x 630 PNG, with
   image dimensions, type, and alternative text.
 - `robots.txt` permits crawling and points to `sitemap.xml`. The sitemap lists
-  only the canonical homepage; it does not claim an artificial modification date.
+  the canonical homepage and About page; it does not claim an artificial
+  modification date.
 - A PNG favicon and Apple touch icon supplement the existing SVG.
 - Production is indexable. Standard and preview `workers.dev` URLs remain
   accessible but carry `noindex`; this is not an access-control mechanism.
@@ -163,7 +177,7 @@ and [custom domain documentation](https://developers.cloudflare.com/workers/conf
 
 The homepage's actual-checks link opens the public report at
 <https://health.yuyakevinito.com/sites/home/> via its overview. The suite covers
-the published homepage, not the unpublished About page or the linked apps'
+the homepage, not the About page or the linked apps'
 internal features.
 
 ```sh
