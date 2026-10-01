@@ -199,12 +199,16 @@ after successful Cloudflare production checks. It resolves the full GitHub
 check suite before accepting `main`; previews and other apps cannot trigger it.
 The workflow is separate from the static regression job and is not a deployment gate.
 
-Only the `chromium-mobile` project records videos. Each real capture is converted
-to a 360px-wide, 12fps, silent H.264 MP4, capped at 1,000,000 bytes and 60 seconds.
-A small poster is generated as well; both retain provenance. FFmpeg and ffprobe
+Only the `chromium-mobile` project records walkthroughs. Real high-DPI screens
+captured before and after each narrated step become a silent, captioned H.264
+video at least 720px wide. The upper limit is 50MB and five minutes; normal clips
+are much smaller. A small poster is generated as well; both retain provenance. FFmpeg and ffprobe
 are required for `node scripts/recordings.mjs`. Short pauses in the recorded
 profile make completed actions readable; other browser profiles do not pause
-or record. Raw videos remain under ignored `test-results/`.
+or record. Raw frames remain under ignored `.site-checks/results/`.
+The shared runtime in `site-checks/shared/` is generated from `YIPG/health`;
+scenario code lives in `site-checks/scenarios.mjs`. Existing CLI entry points
+delegate to that runtime.
 
 The reporter uploads the compressed video/poster, then sends normalized results and opaque version UUIDs to
 `/api/checks/home`. Browser homepage versions must match the before/after probes

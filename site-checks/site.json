@@ -1,0 +1,13 @@
+{
+  "id": "home",
+  "url": "https://yuyakevinito.com/",
+  "worker": "yuyakevinito-com",
+  "repositoryId": 1391708243,
+  "repository": "YIPG/yuyakevinito.com",
+  "scenarioIds": [
+    "service-links",
+    "layout-keyboard",
+    "no-javascript",
+    "metadata"
+  ]
+}
