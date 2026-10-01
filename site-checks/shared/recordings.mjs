@@ -71,8 +71,8 @@ export async function encodeRecordings() {
   const { chromium } = await import('@playwright/test');
   const browser = await chromium.launch();
   try {
-  const captionPage = await browser.newPage({ viewport: { width: 720, height: 144 }, deviceScaleFactor: 1 });
-  await captionPage.setContent('<!doctype html><style>html,body{margin:0;width:720px;height:144px;background:#20251f;color:white}body{display:grid;place-items:center}p{margin:0;padding:12px 24px;font:30px/1.25 Arial,sans-serif;text-align:center;overflow-wrap:anywhere}</style><p id="caption"></p>');
+  const captionPage = await browser.newPage({ viewport: { width: 720, height: 1702 }, deviceScaleFactor: 1 });
+  await captionPage.setContent('<!doctype html><style>html,body{margin:0;width:720px;background:#20251f;color:white}#screen{display:block;width:720px;object-fit:contain;background:#f8f7f4}.caption-band{height:144px;display:grid;place-items:center}p{margin:0;padding:12px 24px;font:30px/1.25 Arial,sans-serif;text-align:center;overflow-wrap:anywhere}</style><img id="screen"><div class="caption-band"><p id="caption"></p></div>');
   for (const [scenario, manifestPath] of found) {
     const path = await realpath(manifestPath);
     const local = relative(allowed, path);
@@ -91,43 +91,46 @@ export async function encodeRecordings() {
     if (source.width < 720 || source.height <= source.width) throw new Error('Source capture is not genuine high-resolution mobile footage');
     const height = Math.round(source.height * 720 / source.width / 2) * 2 + 144;
     const duration = capture.durationMs - first.atMs;
+    await captionPage.setViewportSize({ width: 720, height });
+    await captionPage.locator('#screen').evaluate((node, value) => { node.style.height = `${value}px`; }, height - 144);
+    const segments = captionSegments(capture.cues, first.atMs, duration);
     const frames = [];
     for (const [index, frame] of capture.frames.entries()) {
       if (!/^frame-\d{5}\.jpg$/.test(frame.file)) throw new Error('Invalid capture frame');
       const framePath = await realpath(resolve(directory, frame.file));
       if (dirname(framePath) !== directory) throw new Error('Frame escaped capture directory');
-      frames.push(`file '${frame.file}'`, `duration ${Math.max(0.01, ((capture.frames[index + 1]?.atMs ?? capture.durationMs) - frame.atMs) / 1000)}`);
+      const caption = segments.find(segment => frame.atMs - first.atMs >= segment.start && frame.atMs - first.atMs < segment.end);
+      if (!caption) throw new Error('A captured frame has no narration');
+      const image = await readFile(framePath);
+      const dimensions = await captionPage.locator('#screen').evaluate(async (node, value) => {
+        node.src = value;
+        await node.decode();
+        return { width: node.naturalWidth, height: node.naturalHeight };
+      }, `data:image/jpeg;base64,${image.toString('base64')}`);
+      if (dimensions.width < 720 || dimensions.height <= dimensions.width) throw new Error('A capture frame is below 720p');
+      await captionPage.locator('#caption').evaluate((node, text) => { node.textContent = text; }, caption.text);
+      const annotated = `annotated-${String(index).padStart(5, '0')}.png`;
+      await captionPage.screenshot({ path: resolve(directory, annotated) });
+      frames.push(`file '${annotated}'`, 'option framerate 1000',
+        `duration ${Math.max(0.001, ((capture.frames[index + 1]?.atMs ?? capture.durationMs) - frame.atMs) / 1000)}`);
     }
-    frames.push(`file '${capture.frames.at(-1).file}'`);
+    frames.push(`file 'annotated-${String(capture.frames.length - 1).padStart(5, '0')}.png'`, 'option framerate 1000');
     const concat = resolve(directory, 'frames.txt');
-    const subtitles = resolve(directory, 'captions.txt');
     await writeFile(concat, `${frames.join('\n')}\n`);
-    const captionFiles = [];
-    for (const [index, segment] of captionSegments(capture.cues, first.atMs, duration).entries()) {
-      const name = `caption-${String(index).padStart(3, '0')}.png`;
-      await captionPage.locator('#caption').evaluate((node, text) => { node.textContent = text; }, segment.text);
-      await captionPage.screenshot({ path: resolve(directory, name) });
-      captionFiles.push(`file '${name}'`, `duration ${(segment.end - segment.start) / 1000}`);
-    }
-    if (!captionFiles.length) throw new Error('Recording has no visible captions');
-    captionFiles.push(captionFiles.at(-2));
-    await writeFile(subtitles, `${captionFiles.join('\n')}\n`);
     const video = resolve(output, `${scenario}.mp4`);
     const provenance = `Origin: actual high-DPI mobile screens captured before and after narrated test steps at ${site.url}; ${scenario}; ${run.startedAt}; version ${run.versionBefore}; burned-in action captions. ${site.recordingCredit ?? ''}`;
     for (const crf of ['20', '23']) {
-      // Mobile image documents can differ by one pixel; reinitializing would reset caption timing.
       execFileSync('ffmpeg', [
-        '-v', 'error', '-y', '-reinit_filter', '0', '-f', 'concat', '-safe', '0', '-i', concat,
-        '-f', 'concat', '-safe', '0', '-i', subtitles, '-an',
-        '-filter_complex', `[0:v]scale=720:${height - 144}:flags=lanczos,setsar=1[top];[1:v]setsar=1[caption];[top][caption]vstack=inputs=2:shortest=1`,
-        '-r', '24', '-c:v', 'libx264', '-preset', 'medium', '-crf', crf, '-pix_fmt', 'yuv420p',
+        '-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', concat, '-an',
+        '-vf', 'fps=24', '-t', String(duration / 1000),
+        '-c:v', 'libx264', '-preset', 'medium', '-crf', crf, '-pix_fmt', 'yuv420p',
         '-movflags', '+faststart', '-map_metadata', '-1', '-metadata', `comment=${provenance}`, video,
       ], { stdio: ['ignore', 'pipe', 'pipe'] });
       if ((await stat(video)).size <= MAX_VIDEO_BYTES) break;
     }
     const bytes = await readFile(video);
     const dimensions = validateVideo(probe(video), bytes.length);
-    if (Math.abs(dimensions.durationMs - duration) > 200) throw new Error('The encoded recording timeline was truncated');
+    if (Math.abs(dimensions.durationMs - duration) > 200) throw new Error(`Recording timeline mismatch: expected ${duration}ms, encoded ${dimensions.durationMs}ms`);
     const poster = resolve(output, `${scenario}.jpg`);
     execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(Math.min(1, duration / 2000)), '-i', video,
       '-vf', 'scale=480:-2', '-frames:v', '1', '-q:v', '2', '-map_metadata', '-1', poster]);
