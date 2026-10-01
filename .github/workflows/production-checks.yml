@@ -36,7 +36,10 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - run: npm ci
         if: steps.gate.outputs.run == 'true'
-      - run: npx playwright install --with-deps chromium webkit
+      - name: Install browsers and video encoder
+        run: |
+          npx playwright install --with-deps chromium webkit
+          sudo apt-get install --yes --no-install-recommends ffmpeg
         if: steps.gate.outputs.run == 'true'
       - run: node scripts/report-checks.mjs prepare
         id: prepare
