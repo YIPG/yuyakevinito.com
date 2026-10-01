@@ -170,7 +170,6 @@ test("homepage links to each service with an English name and description", () =
   const projects = [
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
     ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
-    ["koe", "https://koe.yuyakevinito.com/", "Dictation for your Mac, wherever you type."],
     ["X Card Tools", "https://xcard.yuyakevinito.com/", "A guide and shortcut to X's Card Validator."],
   ];
   const links = [...html.matchAll(/<a\b([^>]*class="project-link"[^>]*)>([\s\S]*?)<\/a>/g)];
@@ -186,6 +185,7 @@ test("homepage links to each service with an English name and description", () =
   assert.match(html, /<section class="projects" aria-labelledby="projects-heading">/);
   assert.match(html, /<h2 id="projects-heading">A few things <s aria-hidden="true">I<\/s> an AI Agent made<\/h2>/);
   assert.doesNotMatch(html, /A few things are in the works/);
+  assert.doesNotMatch(html, /saykoe\.com|koe\.yuyakevinito\.com|class="project-name">koe</);
 });
 
 test("public health is supporting copy directly below the projects heading", () => {

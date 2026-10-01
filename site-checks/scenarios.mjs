@@ -2,7 +2,7 @@ import { test, expect, step, visit } from './shared/steps.mjs';
 
 const apps = [
   ['kakusu', 'https://kakusu.yuyakevinito.com/'], ['Karuku', 'https://karuku.yuyakevinito.com/'],
-  ['koe', 'https://koe.yuyakevinito.com/'], ['X Card Tools', 'https://xcard.yuyakevinito.com/'],
+  ['X Card Tools', 'https://xcard.yuyakevinito.com/'],
 ];
 
 test('service-links', async ({ page }) => {
