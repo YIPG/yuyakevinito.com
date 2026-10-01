@@ -57,10 +57,10 @@ class Capture {
 }
 
 export const test = base.extend({
-  page: async ({ page }, use, info) => {
+  page: async ({ page }, providePage, info) => {
     const capture = info.project.name === 'chromium-mobile' ? new Capture(page, info) : null;
     sessions.set(page, { info, capture });
-    try { await use(page); }
+    try { await providePage(page); }
     finally {
       if (capture) await capture.stop();
       sessions.delete(page);
