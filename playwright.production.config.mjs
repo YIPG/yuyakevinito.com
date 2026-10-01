@@ -32,6 +32,8 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
         isMobile: true,
         hasTouch: true,
+        video: browserName === 'chromium'
+          ? { mode: 'on', size: { width: 390, height: 844 } } : 'off',
       },
     },
   ]),

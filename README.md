@@ -185,6 +185,7 @@ npm ci
 npx playwright install chromium webkit
 node scripts/report-checks.mjs prepare
 npm run test:browser
+node scripts/recordings.mjs
 ```
 
 Four scenarios run at desktop and mobile viewport sizes in Playwright Chromium
@@ -198,15 +199,26 @@ after successful Cloudflare production checks. It resolves the full GitHub
 check suite before accepting `main`; previews and other apps cannot trigger it.
 The workflow is separate from the static regression job and is not a deployment gate.
 
-The reporter sends only normalized results and opaque version UUIDs to
+Only the `chromium-mobile` project records videos. Each real capture is converted
+to a 360px-wide, 12fps, silent H.264 MP4, capped at 1,000,000 bytes and 60 seconds.
+A small poster is generated as well; both retain provenance. FFmpeg and ffprobe
+are required for `node scripts/recordings.mjs`. Short pauses in the recorded
+profile make completed actions readable; other browser profiles do not pause
+or record. Raw videos remain under ignored `test-results/`.
+
+The reporter uploads the compressed video/poster, then sends normalized results and opaque version UUIDs to
 `/api/checks/home`. Browser homepage versions must match the before/after probes
 and any expected deployment version. Missing results are incomplete, not passes.
 Set GitHub repository secret `SITE_CHECKS_SECRET` to the same dedicated value as
 the Health Worker's `HOME_CHECKS_SECRET`; never put the value in source or logs.
 Only the reporting step receives it, not browser tests.
+The Health Worker verifies file hashes before linking videos to the report.
+It retains only the latest recording per scenario, not every daily recording.
+Recording errors fail the workflow explicitly but still publish the browser
+results with a recording-unavailable indication.
 
 For an explicit local submission, supply that secret through the environment
 and run `node scripts/report-checks.mjs publish` after the checks. The prepared
 payload is saved under ignored `.site-checks/report.json`; repeating `publish`
-resends the identical report. `prepare` clears only the previous run's three
+resends the identical report. `prepare` clears only the previous run's four
 named files. Raw Playwright reports stay local and are not uploaded as artifacts.

@@ -1,8 +1,9 @@
 import { createHmac, randomUUID } from 'node:crypto';
 import { appendFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
+import { recordingScenarios, uploadRecordings } from './recordings.mjs';
 
-export const scenarios = ['service-links', 'layout-keyboard', 'no-javascript', 'metadata'];
+export const scenarios = recordingScenarios;
 export const profiles = ['chromium-desktop', 'chromium-mobile', 'webkit-desktop', 'webkit-mobile'];
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const directory = new URL('../.site-checks/', import.meta.url);
@@ -87,7 +88,7 @@ async function main() {
   }
   if (command === 'prepare') {
     await mkdir(directory, { recursive: true });
-    for (const file of ['run.json', 'report.json', 'playwright.json']) await rm(new URL(file, directory), { force: true });
+    for (const file of ['run.json', 'report.json', 'playwright.json', 'recordings.json']) await rm(new URL(file, directory), { force: true });
     const expectedVersion = process.env.EXPECTED_SITE_VERSION || null;
     if (expectedVersion && !uuid.test(expectedVersion)) throw new Error('Invalid expected production version');
     const run = {
@@ -116,7 +117,16 @@ async function main() {
   }
   if (body === undefined) {
     await mkdir(directory, { recursive: true });
-    body = JSON.stringify(await createReport());
+    const payload = await createReport();
+    try {
+      payload.recordings = await uploadRecordings(payload.id, secret);
+      if (payload.recordings.length !== scenarios.length) throw new Error('Some mobile recordings are missing');
+    } catch (error) {
+      console.error(`Recordings unavailable: ${error.message}`);
+      payload.recordingError = true;
+      process.exitCode = 1;
+    }
+    body = JSON.stringify(payload);
     await writeFile(new URL('report.json', directory), body);
   }
   const signature = `sha256=${createHmac('sha256', secret).update(body).digest('hex')}`;
@@ -129,6 +139,7 @@ async function main() {
   await response.body?.cancel();
   if (response.status !== 200) throw new Error(`Check report was rejected: HTTP ${response.status}`);
   const payload = JSON.parse(body);
+  if (payload.recordingError) process.exitCode = 1;
   console.log(`Published ${payload.results.length} browser results; incomplete run: ${payload.runnerError}.`);
 }
 

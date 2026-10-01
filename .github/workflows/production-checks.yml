@@ -39,11 +39,15 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
         if: steps.gate.outputs.run == 'true'
       - run: node scripts/report-checks.mjs prepare
+        id: prepare
         if: steps.gate.outputs.run == 'true'
         env:
           EXPECTED_SITE_VERSION: ${{ steps.gate.outputs.expected-version }}
       - run: npm run test:browser
         if: steps.gate.outputs.run == 'true'
+      - name: Compress mobile recordings
+        if: always() && steps.prepare.outcome == 'success'
+        run: node scripts/recordings.mjs
       - name: Publish public result summary
         if: always() && steps.gate.outputs.run == 'true'
         run: node scripts/report-checks.mjs publish
