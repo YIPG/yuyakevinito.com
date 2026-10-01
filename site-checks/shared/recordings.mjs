@@ -6,7 +6,6 @@ import { createReadStream } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { settings } from './settings.mjs';
-import { chromium } from '@playwright/test';
 
 export const MAX_VIDEO_BYTES = 50_000_000;
 export const MAX_POSTER_BYTES = 250_000;
@@ -69,6 +68,7 @@ export async function encodeRecordings() {
   const allowed = await realpath(resolve(state(), 'results'));
   await mkdir(output, { recursive: true });
   const recordings = [];
+  const { chromium } = await import('@playwright/test');
   const browser = await chromium.launch();
   try {
   const captionPage = await browser.newPage({ viewport: { width: 720, height: 144 }, deviceScaleFactor: 1 });
