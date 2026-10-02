@@ -2,7 +2,6 @@ import { test, expect, step, visit } from './shared/steps.mjs';
 
 const apps = [
   ['kakusu', 'https://kakusu.yuyakevinito.com/'], ['Karuku', 'https://karuku.yuyakevinito.com/'],
-  ['X Card Tools', 'https://xcard.yuyakevinito.com/'],
 ];
 
 test('service-links', async ({ page }) => {
@@ -47,9 +46,9 @@ test.describe('Without scripts', () => {
     await step(page, 'Check that all app links remain available', async () => {
       for (const [name, url] of apps) await expect(page.getByRole('link', { name: new RegExp(`^${name}\\b`) })).toHaveAttribute('href', url);
     });
-    await step(page, 'Open X Card Tools without JavaScript', async () => {
-      await page.getByRole('link', { name: /^X Card Tools\b/ }).click();
-      await expect(page).toHaveURL('https://xcard.yuyakevinito.com/');
+    await step(page, 'Open kakusu without JavaScript', async () => {
+      await page.getByRole('link', { name: /^kakusu\b/ }).click();
+      await expect(page).toHaveURL('https://kakusu.yuyakevinito.com/');
     });
   });
 });
