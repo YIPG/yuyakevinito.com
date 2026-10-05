@@ -1,8 +1,8 @@
 import { test, expect, step, visit } from './shared/steps.mjs';
 
 const apps = [
-  ['kakusu', 'https://kakusu.yuyakevinito.com/'], ['Karuku', 'https://karuku.yuyakevinito.com/'],
   ['koe', 'https://saykoe.com/'],
+  ['kakusu', 'https://kakusu.yuyakevinito.com/'], ['Karuku', 'https://karuku.yuyakevinito.com/'],
 ];
 
 test('service-links', async ({ page }) => {

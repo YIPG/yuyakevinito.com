@@ -168,9 +168,9 @@ test("About links back to home, projects, and the same LinkedIn profile", () => 
 
 test("homepage links to each service with an English name and description", () => {
   const projects = [
+    ["koe", "https://saykoe.com/", "A dictation app for macOS, operated by my company, Lenivis LLC."],
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
     ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
-    ["koe", "https://saykoe.com/", "A dictation app for macOS, operated by my company, Lenivis LLC."],
   ];
   const entries = [...html.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map(([, entry]) => entry);
   assert.equal(entries.length, projects.length);
@@ -196,7 +196,9 @@ test("homepage links to each service with an English name and description", () =
 
 test("public health is supporting copy directly below the projects heading", () => {
   assert.match(html, /<h2 id="projects-heading">[^]*?<\/h2>\s*<p class="health-note">/);
-  assert.match(html, /Worried about AI slop\?\s*<a class="health-link" href="https:\/\/health\.yuyakevinito\.com\/">See the actual checks\.<\/a>/);
+  assert.match(html, /<a class="health-link" href="https:\/\/health\.yuyakevinito\.com\/">See how quality is checked\.<\/a>/);
+  assert.equal((html.match(/<s\b/g) ?? []).length, 1, "Keep the homepage's existing joke only once");
+  assert.doesNotMatch(html, /Worried about AI slop|See how I test/);
   assert.equal((html.match(/class="health-link"/g) ?? []).length, 1);
   assert.match(html, /<p class="health-note">[^]*?<\/p>\s*<ul class="project-list"/);
   assert.ok(html.indexOf('id="projects-heading"') < html.indexOf('class="health-link"'));

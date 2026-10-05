@@ -89,10 +89,12 @@ That is distinct from the deployment token used by the builds themselves.
 ### Updating the site
 
 - A supporting sentence directly below the projects heading reads
-  "Worried about AI slop? See the actual checks." Its final clause links to
+  "See how quality is checked." The sentence links to
   <https://health.yuyakevinito.com/>. Homepage responses expose only the opaque
   Cloudflare version UUID and creation time in `X-Site-Version` and
   `X-Site-Version-Created`, allowing the health service to verify deployments.
+  Keep the struck-through I / an AI Agent joke in the projects heading only,
+  without repeating it in this short link.
 
 - The LinkedIn link beside the introduction uses the profile published in the
   `YIPG` GitHub account's social links: <https://www.linkedin.com/in/yuyaito/>.
@@ -109,7 +111,7 @@ That is distinct from the deployment token used by the builds themselves.
   metadata. Have the owner review dates, roles, and descriptions before
   publishing changes. Keep the source document, compensation, internal
   assessments, internal system names, and unverified metrics out of public assets.
-- The homepage lists kakusu, Karuku and koe below the introduction. Update their
+- The homepage leads with koe, followed by kakusu and Karuku. Update their
   names, short English descriptions, and direct HTTPS links in `public/index.html`.
   Service links use their stable subdomains, not their GitHub repository URLs,
   and open in the same tab.
