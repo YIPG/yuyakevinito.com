@@ -114,10 +114,10 @@ That is distinct from the deployment token used by the builds themselves.
   Service links use their stable subdomains, not their GitHub repository URLs,
   and open in the same tab.
 - koe links to `https://saykoe.com/` without advertising an available download.
-  A separate `Watch koe's UI tests` link opens the native results and videos at
-  `https://health.yuyakevinito.com/sites/koe/`. The copy explicitly limits these
-  to simulated account flows, not live dictation or payments.
-- Lenivis LLC links to `https://lenivis.com/`. The owner confirmed it operates koe
+  Keep the homepage simple: native-test explanations and videos belong in
+  Site Health, reached through the existing general checks link, not a separate
+  koe test callout on this page.
+- Lenivis LLC is introduced without an outbound link on the homepage. The owner confirmed it operates koe
   and plans both client software development and its own products. Do not add
   claims about incorporation, locations, customers or availability without confirmation.
 - X Card Tools is no longer listed or included in the homepage's link checks.

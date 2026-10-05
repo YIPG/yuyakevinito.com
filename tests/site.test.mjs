@@ -185,10 +185,10 @@ test("homepage links to each service with an English name and description", () =
   assert.match(html, /<section class="projects" aria-labelledby="projects-heading">/);
   assert.match(html, /<h2 id="projects-heading">A few things <s aria-hidden="true">I<\/s> an AI Agent made<\/h2>/);
   assert.doesNotMatch(html, /A few things are in the works/);
-  assert.match(html, /href="https:\/\/lenivis\.com\/"/);
+  assert.match(html, /<h2 id="company-heading">Lenivis LLC<\/h2>/);
+  assert.doesNotMatch(html, /href="https:\/\/lenivis\.com\/"/);
   assert.match(html, /plans for both client software development and its own products/);
-  assert.match(html, /href="https:\/\/health\.yuyakevinito\.com\/sites\/koe\/"/);
-  assert.match(html, /simulated accounts, not live dictation or payments/);
+  assert.doesNotMatch(html, /Watch koe's UI tests|project-evidence|simulated accounts|health\.yuyakevinito\.com\/sites\/koe/);
   assert.doesNotMatch(html, /brew install|Download koe|koe\.yuyakevinito\.com/);
   assert.doesNotMatch(html, /X Card Tools|xcard\.yuyakevinito\.com/);
 });
