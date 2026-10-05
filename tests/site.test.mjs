@@ -170,24 +170,25 @@ test("homepage links to each service with an English name and description", () =
   const projects = [
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
     ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
-    ["koe", "https://saykoe.com/", "A dictation app for macOS, operated by Lenivis LLC."],
+    ["koe", "https://saykoe.com/", "A dictation app for macOS, operated by my company, Lenivis LLC."],
   ];
-  const links = [...html.matchAll(/<a\b([^>]*class="project-link"[^>]*)>([\s\S]*?)<\/a>/g)];
-  assert.equal(links.length, projects.length);
+  const entries = [...html.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/g)].map(([, entry]) => entry);
+  assert.equal(entries.length, projects.length);
   for (const [index, [name, url, description]] of projects.entries()) {
-    const [, attributes, content] = links[index];
+    const entry = entries[index];
+    const [, attributes, content] = entry.match(/<a\b([^>]*class="project-link"[^>]*)>([\s\S]*?)<\/a>/);
     assert.ok(attributes.includes(`href="${url}"`));
     assert.ok(content.includes(`<span class="project-name">${name}</span>`));
-    assert.ok(content.replace(/\s+/g, " ").includes(description));
+    assert.ok(entry.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").includes(description));
+    assert.doesNotMatch(content, /<a\b/, "Links must not be nested");
     assert.doesNotMatch(attributes, /target=|tabindex=|onclick=/);
     assert.match(content, /aria-hidden="true" focusable="false"/);
   }
   assert.match(html, /<section class="projects" aria-labelledby="projects-heading">/);
   assert.match(html, /<h2 id="projects-heading">A few things <s aria-hidden="true">I<\/s> an AI Agent made<\/h2>/);
   assert.doesNotMatch(html, /A few things are in the works/);
-  assert.match(html, /<h2 id="company-heading">Lenivis LLC<\/h2>/);
-  assert.doesNotMatch(html, /href="https:\/\/lenivis\.com\/"/);
-  assert.match(html, /plans for both client software development and its own products/);
+  assert.match(html, /my company, <a class="company-link" href="https:\/\/lenivis\.com\/">Lenivis LLC<\/a>/);
+  assert.doesNotMatch(html, /company-heading|<section class="company"/);
   assert.doesNotMatch(html, /Watch koe's UI tests|project-evidence|simulated accounts|health\.yuyakevinito\.com\/sites\/koe/);
   assert.doesNotMatch(html, /brew install|Download koe|koe\.yuyakevinito\.com/);
   assert.doesNotMatch(html, /X Card Tools|xcard\.yuyakevinito\.com/);

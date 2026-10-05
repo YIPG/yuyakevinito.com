@@ -117,8 +117,9 @@ That is distinct from the deployment token used by the builds themselves.
   Keep the homepage simple: native-test explanations and videos belong in
   Site Health, reached through the existing general checks link, not a separate
   koe test callout on this page.
-- Lenivis LLC is introduced without an outbound link on the homepage. The owner confirmed it operates koe
-  and plans both client software development and its own products. Do not add
+- koe's description identifies Lenivis LLC as "my company" and links the company
+  name inline to `https://lenivis.com/`. There is no separate company section.
+  The owner confirmed it operates koe and plans client and own-product development. Do not add
   claims about incorporation, locations, customers or availability without confirmation.
 - X Card Tools is no longer listed or included in the homepage's link checks.
   Its standalone site remains available.
