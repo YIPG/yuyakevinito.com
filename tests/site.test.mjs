@@ -170,6 +170,7 @@ test("homepage links to each service with an English name and description", () =
   const projects = [
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
     ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
+    ["koe", "https://saykoe.com/", "A dictation app for macOS, operated by Lenivis LLC."],
   ];
   const links = [...html.matchAll(/<a\b([^>]*class="project-link"[^>]*)>([\s\S]*?)<\/a>/g)];
   assert.equal(links.length, projects.length);
@@ -184,7 +185,11 @@ test("homepage links to each service with an English name and description", () =
   assert.match(html, /<section class="projects" aria-labelledby="projects-heading">/);
   assert.match(html, /<h2 id="projects-heading">A few things <s aria-hidden="true">I<\/s> an AI Agent made<\/h2>/);
   assert.doesNotMatch(html, /A few things are in the works/);
-  assert.doesNotMatch(html, /saykoe\.com|koe\.yuyakevinito\.com|class="project-name">koe</);
+  assert.match(html, /href="https:\/\/lenivis\.com\/"/);
+  assert.match(html, /plans for both client software development and its own products/);
+  assert.match(html, /href="https:\/\/health\.yuyakevinito\.com\/sites\/koe\/"/);
+  assert.match(html, /simulated accounts, not live dictation or payments/);
+  assert.doesNotMatch(html, /brew install|Download koe|koe\.yuyakevinito\.com/);
   assert.doesNotMatch(html, /X Card Tools|xcard\.yuyakevinito\.com/);
 });
 
