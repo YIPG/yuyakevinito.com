@@ -168,7 +168,7 @@ test("About links back to home, projects, and the same LinkedIn profile", () => 
 
 test("homepage links to each service with an English name and description", () => {
   const projects = [
-    ["koe", "https://saykoe.com/", "A dictation app for macOS, operated by my company, Lenivis LLC."],
+    ["koe", "https://saykoe.com/", "A dictation app for macOS."],
     ["kakusu", "https://kakusu.yuyakevinito.com/", "Hide faces in photos, right in your browser."],
     ["Karuku", "https://karuku.yuyakevinito.com/", "Compress JPEG photos while preserving HDR."],
   ];
@@ -188,19 +188,22 @@ test("homepage links to each service with an English name and description", () =
   assert.match(html, /<h2 id="projects-heading">A few things <s aria-hidden="true">I<\/s> an AI Agent made<\/h2>/);
   assert.doesNotMatch(html, /A few things are in the works/);
   assert.match(html, /my company, <a class="company-link" href="https:\/\/lenivis\.com\/">Lenivis LLC<\/a>/);
+  assert.match(entries[0], /<span class="project-description">A dictation app for macOS\.<\/span>/);
+  assert.match(entries[0], /<\/a>\s*<p class="project-company">Operated by my company,/);
   assert.doesNotMatch(html, /company-heading|<section class="company"/);
   assert.doesNotMatch(html, /Watch koe's UI tests|project-evidence|simulated accounts|health\.yuyakevinito\.com\/sites\/koe/);
   assert.doesNotMatch(html, /brew install|Download koe|koe\.yuyakevinito\.com/);
   assert.doesNotMatch(html, /X Card Tools|xcard\.yuyakevinito\.com/);
 });
 
-test("public health is supporting copy directly below the projects heading", () => {
+test("public health is a secondary link grouped with the projects heading", () => {
+  assert.match(html, /<div class="projects-header">\s*<h2 id="projects-heading">/);
   assert.match(html, /<h2 id="projects-heading">[^]*?<\/h2>\s*<p class="health-note">/);
-  assert.match(html, /<a class="health-link" href="https:\/\/health\.yuyakevinito\.com\/">See how quality is checked\.<\/a>/);
+  assert.match(html, /Quality is checked, too\.\s*<a class="health-link" href="https:\/\/health\.yuyakevinito\.com\/">See how\.<\/a>/);
   assert.equal((html.match(/<s\b/g) ?? []).length, 1, "Keep the homepage's existing joke only once");
   assert.doesNotMatch(html, /Worried about AI slop|See how I test/);
   assert.equal((html.match(/class="health-link"/g) ?? []).length, 1);
-  assert.match(html, /<p class="health-note">[^]*?<\/p>\s*<ul class="project-list"/);
+  assert.match(html, /<p class="health-note">[^]*?<\/p>\s*<\/div>\s*<ul class="project-list"/);
   assert.ok(html.indexOf('id="projects-heading"') < html.indexOf('class="health-link"'));
 });
 
