@@ -98,6 +98,9 @@ That is distinct from the deployment token used by the builds themselves.
 
 - The LinkedIn link beside the introduction uses the profile published in the
   `YIPG` GitHub account's social links: <https://www.linkedin.com/in/yuyaito/>.
+- After LinkedIn, a plain "Lab" link opens <https://lab.yuyakevinito.com/> in the same tab: experiments and notes,
+  deployed from a separate repository. The lab is not indexed (`noindex`), and its `/private/` area requires a
+  Cloudflare Access sign-in. It is not a product, so it stays out of the projects list and its link checks.
 - The introduction also links to `/about/`, a concise professional profile in
   `public/about/index.html`: a short introduction, reverse-chronological
   experience, and education. Both pages share `public/styles.css`.
@@ -150,7 +153,9 @@ Cloudflare may prepend its managed robots policy. Check the live file when
 changing crawler settings. The site does not disable Cloudflare bot protections.
 
 The social card is a typographic adaptation of the existing homepage, not
-stock or AI-generated artwork. Its editable source is `design/social-card.svg`;
+stock or AI-generated artwork. Whenever the homepage's look changes (headline,
+typography, colors, spacing or copy shown on the card), update `design/social-card.svg` to match in the same
+change and re-render the PNGs; its headline uses the homepage's h1 tracking in px (`letter-spacing` em x 96). Its editable source is `design/social-card.svg`;
 the icon source is `public/favicon.svg`. Both retain the approved colors,
 system typography, and waving-hand motif. Regenerate the committed PNGs with:
 
