@@ -153,7 +153,9 @@ Cloudflare may prepend its managed robots policy. Check the live file when
 changing crawler settings. The site does not disable Cloudflare bot protections.
 
 The social card is a typographic adaptation of the existing homepage, not
-stock or AI-generated artwork. Its editable source is `design/social-card.svg`;
+stock or AI-generated artwork. Whenever the homepage's look changes (headline,
+typography, colors, spacing or copy shown on the card), update `design/social-card.svg` to match in the same
+change and re-render the PNGs; its headline uses the homepage's h1 tracking in px (`letter-spacing` em x 96). Its editable source is `design/social-card.svg`;
 the icon source is `public/favicon.svg`. Both retain the approved colors,
 system typography, and waving-hand motif. Regenerate the committed PNGs with:
 
