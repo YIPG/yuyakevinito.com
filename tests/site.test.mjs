@@ -71,6 +71,8 @@ test("the introduction links to About without replacing LinkedIn or the short bi
   assert.ok(navigation);
   assert.match(navigation, /<a class="text-link about-link" href="\/about\/">\s*About me &amp; my work/);
   assert.match(navigation, /href="https:\/\/www\.linkedin\.com\/in\/yuyaito\/"/);
+  assert.match(navigation, /<a class="text-link" href="https:\/\/lab\.yuyakevinito\.com\/">Lab<\/a>/);
+  assert.ok(navigation.indexOf("linkedin.com") < navigation.indexOf("lab.yuyakevinito.com"), "Lab follows LinkedIn");
   assert.ok(html.indexOf('class="bio"') < html.indexOf('class="profile-links"'));
   assert.ok(html.indexOf('class="profile-links"') < html.indexOf('<section class="projects"'));
 });

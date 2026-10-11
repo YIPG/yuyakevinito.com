@@ -98,6 +98,9 @@ That is distinct from the deployment token used by the builds themselves.
 
 - The LinkedIn link beside the introduction uses the profile published in the
   `YIPG` GitHub account's social links: <https://www.linkedin.com/in/yuyaito/>.
+- After LinkedIn, a plain "Lab" link opens <https://lab.yuyakevinito.com/> in the same tab: experiments and notes,
+  deployed from a separate repository. The lab is not indexed (`noindex`), and its `/private/` area requires a
+  Cloudflare Access sign-in. It is not a product, so it stays out of the projects list and its link checks.
 - The introduction also links to `/about/`, a concise professional profile in
   `public/about/index.html`: a short introduction, reverse-chronological
   experience, and education. Both pages share `public/styles.css`.

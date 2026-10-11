@@ -36,7 +36,7 @@ h1 {
   margin: 0;
   font-size: clamp(3rem, 9vw, 5.5rem);
   font-weight: 650;
-  letter-spacing: -0.065em;
+  letter-spacing: -0.025em;
   line-height: 1.12;
   text-wrap: balance;
 }
@@ -210,7 +210,7 @@ a:focus-visible {
 
 .about-heading {
   font-size: clamp(3rem, 8vw, 4.25rem);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
 }
 
 .about-intro {
