@@ -1,7 +1,12 @@
 # yuyakevinito.com
 
 A small, English-language personal site with a homepage and an About page. Plain HTML and CSS, with no
-client-side JavaScript, external fonts, or runtime package dependencies.
+external fonts or runtime package dependencies.
+
+The pages follow the visitor's light or dark system setting through CSS alone (`light-dark()` tokens in
+`public/styles.css`). The only script, `public/theme.js`, reveals the Light / Dark / Auto switch and remembers
+an explicit choice in `localStorage` (no cookies). Without JavaScript the switch stays hidden and the page
+still follows the system setting.
 
 ## Local preview
 

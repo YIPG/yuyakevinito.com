@@ -32,7 +32,6 @@ test("homepage has descriptive, crawlable metadata without changing its introduc
   assert.match(html, /<link rel="canonical" href="https:\/\/yuyakevinito\.com\/" \/>/);
   assert.equal((html.match(/<h1>/g) ?? []).length, 1);
   assert.match(html, /<h1>Hi, I'm Yuya\.<\/h1>/);
-  assert.doesNotMatch(html, /<script\b/);
 });
 
 test("Open Graph and X cards share a real, correctly sized PNG", () => {
@@ -145,18 +144,43 @@ test("About has its own canonical metadata and reuses the existing social image"
   }
 });
 
-test("both pages share local styles and work without client-side JavaScript", () => {
+test("both pages share local styles and load only the theme script", () => {
   const css = read("public/styles.css");
   assert.match(css, /:root\s*\{/);
   assert.match(css, /a:focus-visible\s*\{/);
   assert.match(css, /\.about-page\s*\{/);
   for (const document of [html, about]) {
     assert.match(document, /<link rel="stylesheet" href="\/styles\.css" \/>/);
-    assert.doesNotMatch(document, /<script\b|<style\b|onclick=/);
+    assert.deepEqual(document.match(/<script\b[^>]*>/g), ['<script src="/theme.js">']);
+    assert.doesNotMatch(document, /<style\b|onclick=/);
     for (const name of ["favicon.png", "favicon.svg", "apple-touch-icon.png"]) {
       assert.ok(document.includes(`href="/${name}"`));
     }
   }
+});
+
+test("dark mode follows the system, and a hidden-until-ready switch can override it", () => {
+  const css = read("public/styles.css");
+  const script = read("public/theme.js");
+  assert.match(css, /color-scheme: light dark;/);
+  assert.match(css, /:root\[data-theme="light"\]\s*\{\s*color-scheme: light;/);
+  assert.match(css, /:root\[data-theme="dark"\]\s*\{\s*color-scheme: dark;/);
+  const root = css.match(/:root\s*\{([\s\S]*?)\n\}/)[1];
+  const outside = css.replace(/:root\s*\{[\s\S]*?\n\}/, "");
+  assert.doesNotMatch(outside, /#[0-9a-f]{3,8}\b/i, "colors live in light-dark() tokens");
+  assert.match(root, /--paper: light-dark\(#f8f7f4, #1a1b18\);/);
+  for (const document of [html, about]) {
+    assert.match(document, /<meta name="color-scheme" content="light dark" \/>/);
+    assert.match(document, /<meta name="theme-color" content="#f8f7f4" media="\(prefers-color-scheme: light\)" \/>/);
+    assert.match(document, /<meta name="theme-color" content="#1a1b18" media="\(prefers-color-scheme: dark\)" \/>/);
+    const control = document.match(/<div class="theme-switch"[^>]*>([\s\S]*?)<\/div>/);
+    assert.ok(control, "theme switch is present");
+    assert.match(control[0], /role="radiogroup" aria-labelledby="theme-label" data-theme-switch hidden>/);
+    assert.deepEqual([...control[1].matchAll(/value="(\w+)" \/><span>(\w+)</g)].map(([, value, label]) => [value, label]),
+      [["light", "Light"], ["dark", "Dark"], ["auto", "Auto"]]);
+  }
+  assert.match(script, /localStorage/);
+  assert.doesNotMatch(script, /document\.cookie/);
 });
 
 test("About links back to home, projects, and the same LinkedIn profile", () => {

@@ -7,7 +7,9 @@
       name="description"
       content="Yuya Ito is a Senior Software Engineer at Microsoft, with broad experience building, shipping, and operating products across the stack."
     />
-    <meta name="theme-color" content="#f8f7f4" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f8f7f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1b18" media="(prefers-color-scheme: dark)" />
     <meta name="robots" content="max-image-preview:large" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Yuya" />
@@ -41,6 +43,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="stylesheet" href="/styles.css" />
+    <script src="/theme.js"></script>
     <title>About Yuya | Software Engineer</title>
   </head>
   <body class="about-page">
@@ -127,6 +130,12 @@
             <path d="M5 12h14m-6-6 6 6-6 6" />
           </svg>
         </a>
+        <div class="theme-switch" role="radiogroup" aria-labelledby="theme-label" data-theme-switch hidden>
+          <span class="theme-switch-label" id="theme-label">Theme</span>
+          <label><input type="radio" name="theme" value="light" /><span>Light</span></label>
+          <label><input type="radio" name="theme" value="dark" /><span>Dark</span></label>
+          <label><input type="radio" name="theme" value="auto" /><span>Auto</span></label>
+        </div>
       </footer>
     </main>
   </body>
